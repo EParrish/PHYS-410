@@ -1,0 +1,14 @@
+Stars Values
+	Stars Min: 263
+	Stars Max: 65535
+	Number of Saturated Pixels: 521
+	Number of Unique Values: 5146
+	Mean: 519.92983607 Mode: 439
+Galaxy Values
+	Galaxy Min: 1
+	Galaxy Max: 50233
+	Number of Saturated Pixels: 0
+	Number of Unique Values: 3508
+	Mean: 588.310570773 Mode: 529
+
+https://jsfiddle.net/wcag55bq/#&togetherjs=7Myvo1jTiD
