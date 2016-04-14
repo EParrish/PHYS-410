@@ -1,8 +1,6 @@
 import csv
-from ROOT import *
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
 # from matplotlib import cm
 import scipy.ndimage as ndimage
 
@@ -55,9 +53,6 @@ with open("stars.csv", "r") as csvfile:
 
 # Image_Array.pop(0)
 Image_Array.reverse()
-print Image_Array[0]
-print Image_Array[1]
-print Image_Array[2]
 numpyarray = np.array(Image_Array)
 # im = Image.fromarray(numpyarray)
 # im.putpalette(getpalette(cm.jet))
@@ -66,8 +61,3 @@ plt.imshow(numpyarray, cmap=plt.cm.gray)
 plt.show()
 # img = Image.fromarray(Image_Array)
 # toimage(Image_Array).show()
-
-
-######################################
-#################### Problem 4########
-sci
