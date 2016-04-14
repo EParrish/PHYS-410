@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 # from matplotlib import cm
-from scipy.misc import toimage
+import scipy.ndimage as ndimage
 
 Image_Array = [] # [[0 for x in range(1025)] for x in range(10000)]
 
@@ -12,7 +12,7 @@ with open("stars.csv", "r") as csvfile:
 	thisreader = csv.reader(csvfile, delimiter=',')
 
 	# cnt = 0
-	last_y_pos = 0
+	last_y_pos = 1
 	this_row = []
 
 	for row in thisreader:
@@ -21,13 +21,19 @@ with open("stars.csv", "r") as csvfile:
 		y_pos = int(row[1])
 		z_value = float(row[2])
 
+
 		if y_pos == last_y_pos:
 			this_row.append(z_value)
-		else:
+
+		elif y_pos != last_y_pos:
 			# if len(this_row) != 0:
 			Image_Array.append(np.array(this_row))
 			last_y_pos = y_pos
 			this_row = [z_value]
+
+		if x_pos == 1124 and y_pos == 1024:
+			Image_Array.append(np.array(this_row))
+
 
 		# print x_pos+1, y_pos+1, z_value
 
@@ -47,7 +53,11 @@ with open("stars.csv", "r") as csvfile:
 # raw_input("Press Enter to Quit")
 
 
-Image_Array.pop(0)
+# Image_Array.pop(0)
+Image_Array.reverse()
+print Image_Array[0]
+print Image_Array[1]
+print Image_Array[2]
 numpyarray = np.array(Image_Array)
 # im = Image.fromarray(numpyarray)
 # im.putpalette(getpalette(cm.jet))
@@ -56,3 +66,8 @@ plt.imshow(numpyarray, cmap=plt.cm.gray)
 plt.show()
 # img = Image.fromarray(Image_Array)
 # toimage(Image_Array).show()
+
+
+######################################
+#################### Problem 4########
+sci
