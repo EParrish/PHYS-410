@@ -6,7 +6,7 @@ import scipy.ndimage as ndimage
 
 Image_Array = [] # [[0 for x in range(1025)] for x in range(10000)]
 
-with open("stars.csv", "r") as csvfile:
+with open("galaxy.csv", "r") as csvfile:
 	thisreader = csv.reader(csvfile, delimiter=',')
 
 	# cnt = 0
@@ -18,7 +18,7 @@ with open("stars.csv", "r") as csvfile:
 		x_pos = int(row[0])
 		y_pos = int(row[1])
 		z_value = float(row[2])
-
+		print z_value
 
 		if y_pos == last_y_pos:
 			this_row.append(z_value)
