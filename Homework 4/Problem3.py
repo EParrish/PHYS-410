@@ -8,27 +8,29 @@ rsize = int(max(row))
 csize = int(max(col))
 data=np.array(data).reshape(rsize,csize)
 
-print rsize, csize
+def neighbors(arr,x,y,n):
+    ''' Given a 2D-array, returns an nxn array whose "center" element is arr[x,y]'''
+    arr=np.roll(np.roll(arr,shift=-x+1,axis=0),shift=-y+1,axis=1)
+    return arr[:n,:n]
 
-def DefineWindows(Towers, window_size):
-	"""
-	"""
-	dphi_window = (window_size*0.2)/2
-	deta_window = (window_size*0.2)/2
-	Windows = {}
-	for tower1 in Towers.keys():
-		thisWindow = []
-		for tower2 in Towers.keys():
-			if tower1 == tower2: 
-				continue
-			deltaEta = abs(Towers[tower1].Eta() - Towers[tower2].Eta())
-			deltaPhi = abs(Towers[tower1].Phi() - Towers[tower2].Phi())
-			if deltaPhi > pi:
-				deltaPhi = 2*pi - deltaPhi
-			if deltaEta <= deta_window:
-				if deltaPhi <= dphi_window:
-					thisWindow.append(Towers[tower2].Tower())
+# print(data)
+# print "\n"
 
-		Windows[tower1] = thisWindow
+# print(neighbors(data,0,0))
+# print neighbors(data,0,0).mean(), neighbors(data,0,0).std()
 
-	return Windows
+sizes = [3] # ,4,5,6,7,8]
+
+output_data = {}
+for i in sizes:
+	output_data[i] = []
+
+for X in xrange(data.shape[0]):
+	for Y in xrange(data.shape[1]):
+		for box_size in sizes:
+			this_mean = neighbors(data, X, Y, box_size).mean()
+			this_std = neighbors(data, X, Y, box_size).std()
+
+			output_data[box_size].append([X, Y, this_mean, this_std])
+
+print output_data
