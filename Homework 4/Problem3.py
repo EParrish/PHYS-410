@@ -105,6 +105,7 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+import csv
 
 # row,col,data=np.loadtxt("noisyimage.txt",unpack=True)
 # rsize = int(max(row))
@@ -145,7 +146,15 @@ window_size = 20
 
 
 for i in xrange(1,rsize):
+	if i < window_size:
+		continue
+	if i > rsize - window_size:
+		continue
 	for j in xrange(1,csize):
+		if j < window_size:
+			continue
+		if j > csize - window_size:
+			continue
 		this_window = []
 		k = i - int(window_size/2)
 		x_neighbors = []
@@ -165,14 +174,15 @@ for i in xrange(1,rsize):
 			k += 1
 
 
-
 Image_Array = [] # [[0 for x in range(1025)] for x in range(10000)]
 
+# noisyAnew
+# noisyB
 with open("noisyB.csv", "r") as csvfile:
 	thisreader = csv.reader(csvfile, delimiter=',')
 
 	# cnt = 0
-	last_x_pos = 1
+	last_y_pos = 1
 	this_row = []
 
 	for row in thisreader:
@@ -180,39 +190,53 @@ with open("noisyB.csv", "r") as csvfile:
 		x_pos = int(row[0])
 		y_pos = int(row[1])
 		z_value = float(row[2])
-		print z_value
+		# print x_pos, y_pos, last_y_pos
+		# print z_value
 
-		if x_pos == last_x_pos:
+		if y_pos == last_y_pos:
 			this_row.append(z_value)
 
-		elif x_pos != last_x_pos:
+		elif y_pos != last_y_pos:
 			# if len(this_row) != 0:
 			Image_Array.append(np.array(this_row))
-			last_x_pos = x_pos
+			last_y_pos = y_pos
 			this_row = [z_value]
 
 		if x_pos == 1000 and y_pos == 1000:
 			Image_Array.append(np.array(this_row))
 
+# print len(Image_Array), len(Image_Array[1])
+
 means = []
 stds = []
-for i in xrange(1000):
-	for j in xrange(1000):
+for i in xrange(1,1000):
+	if i < window_size:
+		continue
+	if i > rsize - window_size:
+		continue
+	for j in xrange(1,1000):
+		if j < window_size:
+			continue
+		if j > csize - window_size:
+			continue
 		neighbors = windows["%s_%s" %(i,j)]
 		neigh_z_values = []
 		for neighbor in neighbors:
 			neigh_x = neighbor[0]
 			neigh_y = neighbor[1]
-			neigh_z_values.append(Image_Array[neigh_x,neigh_y])
+			# print neigh_x, neigh_y
+			neigh_z_values.append(Image_Array[neigh_x][neigh_y])
 
 
-		this_mean = neigh_z_values.sum() / len(neigh_z_values)
+		this_mean = sum(neigh_z_values) / len(neigh_z_values)
 		means.append(this_mean)
 		nparray = np.asarray(this_mean)
 		this_std = nparray.std()
 		stds.append(this_std)
 
+		print window_size, i, j, this_mean, this_std
 
-print means
-print stds
+
+# print means
+# print stds
 		#.sum / len(windows["%s_%s" %(x_pos,y_pos)])
