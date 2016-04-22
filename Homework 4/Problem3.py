@@ -112,8 +112,8 @@ import csv
 # csize = int(max(col))
 # data=np.array(data).reshape(rsize,csize)
 
-rsize = 1000
-csize = 1000
+rsize = 256
+csize = 256
 windows = {}
 window_size = 20
 
@@ -178,7 +178,7 @@ Image_Array = [] # [[0 for x in range(1025)] for x in range(10000)]
 
 # noisyAnew
 # noisyB
-with open("noisyB.csv", "r") as csvfile:
+with open("noisyAnew.csv", "r") as csvfile:
 	thisreader = csv.reader(csvfile, delimiter=',')
 
 	# cnt = 0
@@ -230,7 +230,7 @@ for i in xrange(1,1000):
 
 		this_mean = sum(neigh_z_values) / len(neigh_z_values)
 		means.append(this_mean)
-		nparray = np.asarray(this_mean)
+		nparray = np.asarray(neigh_z_values)
 		this_std = nparray.std()
 		stds.append(this_std)
 
