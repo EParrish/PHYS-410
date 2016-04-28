@@ -1,6 +1,9 @@
 import csv
 import random
 import matplotlib.pyplot as plt
+import itertools
+import math
+import time
 
 def GrabData():
 	CoordinateDictionary={}
@@ -22,6 +25,8 @@ def GrabData():
 def FindDistanceSquared(p0, p1):
 	"""
 	Returns the distances squared (DR)^2
+	Google says math.sqrt call is slow
+
 	p0: tuple of first points coordinates
 	p1: tuple of second points coordinates
 	"""
@@ -72,18 +77,71 @@ def StartFromBoise(CoordinateDictionary):
 
 	keys = FiveCityDict.keys()
 	starting_city = "Boise, Idaho"
-	print "Starting City: %s %s" %(starting_city, FiveCityDict[starting_city])
+	print "Starting City: %s" %(starting_city)
 	keys.remove(starting_city)
 
 	random.shuffle(keys)
 	last_city = starting_city
-	dist = 0
-	for i in keys:
-		dist += FindDistanceSquared(FiveCityDict[last_city], FiveCityDict[i])
-		print dist
+	distances = []
+
+	AllPossibleCombinations = list(itertools.permutations(keys, len(keys)))
+
+	for i in AllPossibleCombinations:
+		dist = 0
+		for j in i:
+			dist += FindDistanceSquared(FiveCityDict[last_city], FiveCityDict[j])
+			last_city=j
+		distances.append(dist)
+
+	for k in xrange(len(distances)):
+		print "\t%s" %(AllPossibleCombinations[k],)
+		print "\t %s" %(math.sqrt(distances[k]))
+
+	print "Minimum Path: %s" %(AllPossibleCombinations[distances.index(min(distances))],)
+	print "Minimum Distance: %s" %math.sqrt(min(distances))
+
+def PartD(CoordinateDictionary):
+	"""
+	Picks a set number of random cities and finds the minimum path distance.
+	WARNING: Very Large Output. (560M when piped to text file)
+	"""
+	Number_of_Cities = 11
+
+	AllKeys = CoordinateDictionary.keys()
+	CityDict = {}
+	for i in xrange(Number_of_Cities):
+		this_choice = random.choice(AllKeys)
+		CityDict[this_choice] = CoordinateDictionary[this_choice]
+
+	keys = CityDict.keys()
+	starting_city = random.choice(keys)
+	print "Starting City: %s" %(starting_city)
+	keys.remove(starting_city)
+
+	random.shuffle(keys)
+	last_city = starting_city
+	distances = []
+
+	AllPossibleCombinations = list(itertools.permutations(keys, len(keys)))
+
+	for i in AllPossibleCombinations:
+		dist = 0
+		for j in i:
+			dist += FindDistanceSquared(CityDict[last_city], CityDict[j])
+			last_city=j
+		distances.append(dist)
+
+	for k in xrange(len(distances)):
+		print "\t%s" %(AllPossibleCombinations[k],)
+		print "\t %s" %(math.sqrt(distances[k]))
+
+	print "Minimum Path: %s" %(AllPossibleCombinations[distances.index(min(distances))],)
+	print "Minimum Distance: %s" %math.sqrt(min(distances))
 	
-		
 if __name__ == "__main__":
+	start_time = time.time()
 	data = GrabData()
 	# FindRandomPath(data)
-	StartFromBoise(data)
+	# StartFromBoise(data)
+	PartD(data)
+	print "Runtime: %s seconds" %(time.time() - start_time) 
