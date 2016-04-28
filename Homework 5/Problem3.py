@@ -5,6 +5,9 @@ import itertools
 import math
 import time
 
+"""
+If time allows. Convert distances from lat/long to miles using great arcs.
+"""
 def GrabData():
 	CoordinateDictionary={}
 
@@ -34,7 +37,7 @@ def FindDistanceSquared(p0, p1):
 
 def PartA(CoordinateDictionary):
 	"""
-	
+	Greedy algorithm
 	"""
 	CityDict = {"Olympia, Washington": CoordinateDictionary["Olympia, Washington"], 
 					"Salem, Oregon": CoordinateDictionary["Salem, Oregon"],
@@ -52,8 +55,10 @@ def PartA(CoordinateDictionary):
 	keys.remove(starting_city)
 
 	last_city = starting_city
-	distances = []
+	Final_distances = []
 	Final_Path=[]
+	Final_lats=[]
+	Final_longs=[]
 
 	for k in xrange(len(keys)):
 		AllPossibleCombinations = list(itertools.permutations(keys, 1))
@@ -65,26 +70,65 @@ def PartA(CoordinateDictionary):
 			distances.append(FindDistanceSquared(CityDict[last_city], CityDict[i[0]]))
 
 		last_city = AllPossibleCombinations[distances.index(min(distances))][0]
-		Final_Path.append([last_city, min(distances)])
+		Final_Path.append([last_city, CityDict[last_city]])
+		Final_lats.append(CityDict[last_city][0])
+		Final_longs.append(CityDict[last_city][1])
+		Final_distances.append(min(distances))
 		keys.remove(last_city)
 		# print last_city
-	print Final_Path
+	# print Final_Path
+	print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
+	plt.figure()
+	plt.plot(Final_lats, Final_longs, '-0')
+	plt.show()
 
+def PartB(CoordinateDictionary):
+	"""
+	2 opt swap
+	"""
+	CityDict = {"Olympia, Washington": CoordinateDictionary["Olympia, Washington"], 
+					"Salem, Oregon": CoordinateDictionary["Salem, Oregon"],
+					"Little Rock, Arkansas": CoordinateDictionary["Little Rock, Arkansas"],
+					"Madison, Wisconsin": CoordinateDictionary["Madison, Wisconsin"],
+					"Sacramento, California": CoordinateDictionary["Sacramento, California"],
+					"Frankfort, Kentucky": CoordinateDictionary["Frankfort, Kentucky"],
+					"Concord, New Hampshire": CoordinateDictionary["Concord, New Hampshire"],
+					"Raleigh, North Carolina": CoordinateDictionary["Raleigh, North Carolina"],
+					"Tallahassee, Florida": CoordinateDictionary["Tallahassee, Florida"]}
 
+	keys = CityDict.keys()
+	starting_city = "Little Rock, Arkansas"
+	print "Starting City: %s" %(starting_city)
+	keys.remove(starting_city)
 
+	last_city = starting_city
+	Final_distances=[]
+	Final_Path=[]
+	Final_lats=[]
+	Final_longs=[]
 
+	for k in xrange(len(keys)):
+		AllPossibleCombinations = list(itertools.permutations(keys, 1))
+		# print AllPossibleCombinations
 
+		distances = []
+		for i in AllPossibleCombinations:
+			# print i[0]
+			distances.append(FindDistanceSquared(CityDict[last_city], CityDict[i[0]]))
 
-	# 		last_city=j
-	# 	distances.append(dist)
+		last_city = AllPossibleCombinations[distances.index(min(distances))][0]
+		Final_Path.append([last_city, CityDict[last_city]])
+		Final_lats.append(CityDict[last_city][0])
+		Final_longs.append(CityDict[last_city][1])
+		Final_distances.append(min(distances))
+		keys.remove(last_city)
+		# print last_city
+	# print Final_Path
+	print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
+	plt.figure()
+	plt.plot(Final_lats, Final_longs, '-0')
+	plt.show()
 
-	# for k in xrange(len(distances)):
-	# 	print "\t%s" %(AllPossibleCombinations[k],)
-	# 	print "\t %s" %(math.sqrt(distances[k]))
-
-	# print "Minimum Path: %s" %(AllPossibleCombinations[distances.index(min(distances))],)
-	# print "Minimum Distance: %s" %math.sqrt(min(distances))
-	
 if __name__ == "__main__":
 	start_time = time.time()
 	data = GrabData()
