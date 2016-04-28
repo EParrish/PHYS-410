@@ -103,7 +103,7 @@ def StartFromBoise(CoordinateDictionary):
 def PartD(CoordinateDictionary):
 	"""
 	Picks a set number of random cities and finds the minimum path distance.
-	WARNING: Very Large Output. (560M when piped to text file)
+	WARNING: Very Large Output. (560M when piped to text file, for 11 cities) Nevermind
 	"""
 	Number_of_Cities = 11
 
