@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import itertools
 import math
 import time
+from math import radians, cos, sin, asin, sqrt
 
 """
 If time allows. Convert distances from lat/long to miles using great arcs.
@@ -26,14 +27,29 @@ def GrabData():
 	return CoordinateDictionary
 
 def FindDistanceSquared(p0, p1):
-	"""
-	Returns the distances squared (DR)^2
-	Google says math.sqrt call is slow
+	# """
+	# Returns the distances squared (DR)^2
+	# Google says math.sqrt call is slow
 
-	p0: tuple of first points coordinates
-	p1: tuple of second points coordinates
+	# p0: tuple of first points coordinates
+	# p1: tuple of second points coordinates
+	# """
+	# return (p0[0] - p1[0])**2 + (p0[1] - p1[1])**2
 	"""
-	return (p0[0] - p1[0])**2 + (p0[1] - p1[1])**2
+	Calculate the great circle distance between two points 
+	on the earth (specified in decimal degrees)
+	"""
+	lon1 = p0[0]; lat1 = p0[1];
+	lon2 = p1[0]; lat2 = p1[1];
+	# convert decimal degrees to radians 
+	lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+	# haversine formula 
+	dlon = lon2 - lon1 
+	dlat = lat2 - lat1 
+	a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+	c = 2 * asin(sqrt(a)) 
+	km = 6367 * c
+	return km
 
 def FindPathDistance(route):
 	dist = 0
@@ -54,7 +70,7 @@ def FindPathCoordinates(route):
 	Final_longs = []
 
 	for k in route:
-		Final_lats.append(data[k][0])
+		Final_lats.append(data[k][0])	
 		Final_longs.append(data[k][1])
 		dist += FindDistanceSquared(data[last_stop], data[k])
 	return dist, Final_lats, Final_longs
@@ -94,17 +110,28 @@ def PartA(CoordinateDictionary):
 			distances.append(FindDistanceSquared(CityDict[last_city], CityDict[i[0]]))
 
 		last_city = AllPossibleCombinations[distances.index(min(distances))][0]
-		Final_Path.append([last_city, CityDict[last_city]])
+		Final_Path.append(last_city)
 		Final_lats.append(CityDict[last_city][0])
 		Final_longs.append(CityDict[last_city][1])
 		Final_distances.append(min(distances))
 		keys.remove(last_city)
 		# print last_city
 	print Final_Path
-	print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
-	plt.figure()
+	print "Total Distance: %s" %((sum(Final_distances)))
+
+
+	fig, ax = plt.subplots()
 	plt.plot(Final_lats, Final_longs, '-0')
+
+	for i, txt in enumerate(Final_Path):
+		ax.annotate(txt, (Final_lats[i], Final_longs[i]))
+
 	plt.show()
+
+
+	# plt.figure()
+	# plt.plot(Final_lats, Final_longs, '-0')
+	# plt.show()
 
 def DoTheyIntersect(p0, p1, p2, p3):
 	"""
@@ -184,7 +211,15 @@ def RunTwoOptSwap(bestPath):
 			if this_dist < best_distance:
 				best_distance = this_dist
 				bestPath = testPath
-				RunTwoOptSwap(bestPath)
+
+				dist, Final_lats, Final_longs = FindPathCoordinates(bestPath)
+				plt.figure()
+				plt.plot()
+				plt.plot(Final_lats, Final_longs, '-0')
+				plt.show()
+
+				return RunTwoOptSwap(bestPath)
+
 	return bestPath
 				
 def PartB(CoordinateDictionary):
@@ -210,12 +245,16 @@ def PartB(CoordinateDictionary):
 	best_path = RunTwoOptSwap(keys)
 	dist, Final_lats, Final_longs = FindPathCoordinates(best_path)
 	print best_path
-	print "Total Distance: %s" %(math.sqrt(dist))
-	plt.figure()
+	print "Total Distance: %s" %((dist))
+	fig, ax = plt.subplots()
 	plt.plot(Final_lats, Final_longs, '-0')
+
+	for i, txt in enumerate(best_path):
+		ax.annotate(txt, (Final_lats[i], Final_longs[i]))
+
 	plt.show()
 
-	
+
 	# best_distance = 99999999999999999999999
 	# bestPath = keys
 
@@ -298,9 +337,32 @@ def PartB(CoordinateDictionary):
 	# plt.plot(Final_lats, Final_longs, '-0')
 	# plt.show()
 
+def Problem4():
+	"""
+	2 opt swap
+	"""
+	keys = data.keys()
+	starting_city = "Olympia, Washington"
+	print "Starting City: %s" %(starting_city)
+	# keys.remove(starting_city)
+	# print len(keys)
+
+	best_path = RunTwoOptSwap(keys)
+	dist, Final_lats, Final_longs = FindPathCoordinates(best_path)
+	print best_path
+	print "Total Distance: %s" %((dist))
+	fig, ax = plt.subplots()
+	plt.plot(Final_lats, Final_longs, '-0')
+
+	for i, txt in enumerate(best_path):
+		ax.annotate(txt, (Final_lats[i], Final_longs[i]))
+
+	plt.show()
+
 if __name__ == "__main__":
 	start_time = time.time()
 	data = GrabData()
 	# PartA(data)
-	PartB(data)
+	# PartB(data)
+	Problem4()
 	print "Runtime: %s seconds" %(time.time() - start_time) 

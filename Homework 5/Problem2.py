@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import itertools
 import math
 import time
+from math import radians, cos, sin, asin, sqrt
 
 def GrabData():
 	CoordinateDictionary={}
@@ -23,14 +24,29 @@ def GrabData():
 	return CoordinateDictionary
 
 def FindDistanceSquared(p0, p1):
-	"""
-	Returns the distances squared (DR)^2
-	Google says math.sqrt call is slow
+	# """
+	# Returns the distances squared (DR)^2
+	# Google says math.sqrt call is slow
 
-	p0: tuple of first points coordinates
-	p1: tuple of second points coordinates
+	# p0: tuple of first points coordinates
+	# p1: tuple of second points coordinates
+	# """
+	# return (p0[0] - p1[0])**2 + (p0[1] - p1[1])**2
 	"""
-	return (p0[0] - p1[0])**2 + (p0[1] - p1[1])**2
+	Calculate the great circle distance between two points 
+	on the earth (specified in decimal degrees)
+	"""
+	lon1 = p0[0]; lat1 = p0[1];
+	lon2 = p1[0]; lat2 = p1[1];
+	# convert decimal degrees to radians 
+	lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+	# haversine formula 
+	dlon = lon2 - lon1 
+	dlat = lat2 - lat1 
+	a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+	c = 2 * asin(sqrt(a)) 
+	km = 6367 * c
+	return km
 
 def FindRandomPath(CoordinateDictionary):
 	"""
@@ -61,8 +77,13 @@ def FindRandomPath(CoordinateDictionary):
 		long_values.append(p0[1])
 		print "\t %s %s" %(i, p0)
 
-	plt.figure()
-	plt.plot(lat_values, long_values, '-o')
+	keys.insert(0,starting_city)
+	fig, ax = plt.subplots()
+	plt.plot(lat_values, long_values, '-0')
+
+	for i, txt in enumerate(keys):
+		ax.annotate(txt, (lat_values[i], long_values[i]))
+
 	plt.show()
 
 def StartFromBoise(CoordinateDictionary):
@@ -77,7 +98,7 @@ def StartFromBoise(CoordinateDictionary):
 
 	keys = FiveCityDict.keys()
 	starting_city = "Boise, Idaho"
-	print "Starting City: %s" %(starting_city)
+	# print "Starting City: %s" %(starting_city)
 	keys.remove(starting_city)
 
 	random.shuffle(keys)
@@ -94,11 +115,13 @@ def StartFromBoise(CoordinateDictionary):
 		distances.append(dist)
 
 	for k in xrange(len(distances)):
-		print "\t%s" %(AllPossibleCombinations[k],)
-		print "\t %s" %(math.sqrt(distances[k]))
+		x = list(AllPossibleCombinations[k])
+		x.append(str(distances[k]))
+		print "," .join(x)
+		
 
 	print "Minimum Path: %s" %(AllPossibleCombinations[distances.index(min(distances))],)
-	print "Minimum Distance: %s" %math.sqrt(min(distances))
+	print "Minimum Distance: %s" %(min(distances))
 
 def PartD(CoordinateDictionary):
 	"""
@@ -131,12 +154,16 @@ def PartD(CoordinateDictionary):
 			last_city=j
 		distances.append(dist)
 
+	# for k in xrange(len(distances)):
+	# 	print "\t%s" %(AllPossibleCombinations[k],)
+	# 	print "\t %s" %((distances[k]))
 	for k in xrange(len(distances)):
-		print "\t%s" %(AllPossibleCombinations[k],)
-		print "\t %s" %(math.sqrt(distances[k]))
+		x = list(AllPossibleCombinations[k])
+		x.append(str(distances[k]))
+		print "," .join(x)
 
 	print "Minimum Path: %s" %(AllPossibleCombinations[distances.index(min(distances))],)
-	print "Minimum Distance: %s" %math.sqrt(min(distances))
+	print "Minimum Distance: %s" %(min(distances))
 	
 if __name__ == "__main__":
 	start_time = time.time()
