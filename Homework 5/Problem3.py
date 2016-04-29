@@ -35,6 +35,30 @@ def FindDistanceSquared(p0, p1):
 	"""
 	return (p0[0] - p1[0])**2 + (p0[1] - p1[1])**2
 
+def FindPathDistance(route):
+	dist = 0
+	last_stop = route[0]
+	Final_lats = []
+	Final_longs = []
+
+	for k in route:
+		Final_lats.append(data[k][0])
+		Final_longs.append(data[k][1])
+		dist += FindDistanceSquared(data[last_stop], data[k])
+	return dist
+
+def FindPathCoordinates(route):
+	dist = 0
+	last_stop = route[0]
+	Final_lats = []
+	Final_longs = []
+
+	for k in route:
+		Final_lats.append(data[k][0])
+		Final_longs.append(data[k][1])
+		dist += FindDistanceSquared(data[last_stop], data[k])
+	return dist, Final_lats, Final_longs
+
 def PartA(CoordinateDictionary):
 	"""
 	Greedy algorithm
@@ -76,7 +100,7 @@ def PartA(CoordinateDictionary):
 		Final_distances.append(min(distances))
 		keys.remove(last_city)
 		# print last_city
-	# print Final_Path
+	print Final_Path
 	print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
 	plt.figure()
 	plt.plot(Final_lats, Final_longs, '-0')
@@ -137,7 +161,32 @@ def DoTheyIntersect(p0, p1, p2, p3):
 	else:
 		return False
 
+def TwooptSwap(current_route, i, k):
+	# print len(current_route)
+	newPath = []
+	newCoords = []
+	temp = []
 
+	newPath.append(current_route[0:i])
+	newPath.append(list(reversed(current_route[i:k+1])))
+	newPath.append(current_route[k+1:])
+
+	newPath = [item for sublist in newPath for item in sublist]
+	# print len(newPath)
+	return newPath
+
+def RunTwoOptSwap(bestPath):
+	best_distance = FindPathDistance(bestPath)
+	for i in xrange(len(bestPath)-1):
+		for j in xrange(i+1, len(bestPath)+1):
+			testPath = TwooptSwap(bestPath, i, j)
+			this_dist= FindPathDistance(testPath)
+			if this_dist < best_distance:
+				best_distance = this_dist
+				bestPath = testPath
+				RunTwoOptSwap(bestPath)
+	return bestPath
+				
 def PartB(CoordinateDictionary):
 	"""
 	2 opt swap
@@ -155,42 +204,103 @@ def PartB(CoordinateDictionary):
 	keys = CityDict.keys()
 	starting_city = "Little Rock, Arkansas"
 	print "Starting City: %s" %(starting_city)
-	keys.remove(starting_city)
+	# keys.remove(starting_city)
+	# print len(keys)
 
-	last_city = starting_city
-	Final_distances=[]
-	Final_Path=[]
-	Final_lats=[]
-	Final_longs=[]
-
-	for k in xrange(len(keys)):
-		AllPossibleCombinations = list(itertools.permutations(keys, 1))
-		# print AllPossibleCombinations
-
-		distances = []
-		for i in AllPossibleCombinations:
-			# print i[0]
-			distances.append(FindDistanceSquared(CityDict[last_city], CityDict[i[0]]))
-
-		#### Look at path, if it intersects with any previous paths, draw a new one.
-
-
-
-		last_city = AllPossibleCombinations[distances.index(min(distances))][0]
-		Final_Path.append([last_city, CityDict[last_city]])
-		Final_lats.append(CityDict[last_city][0])
-		Final_longs.append(CityDict[last_city][1])
-		Final_distances.append(min(distances))
-		keys.remove(last_city)
-		# print last_city
-	# print Final_Path
-	print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
+	best_path = RunTwoOptSwap(keys)
+	dist, Final_lats, Final_longs = FindPathCoordinates(best_path)
+	print best_path
+	print "Total Distance: %s" %(math.sqrt(dist))
 	plt.figure()
 	plt.plot(Final_lats, Final_longs, '-0')
 	plt.show()
 
+	
+	# best_distance = 99999999999999999999999
+	# bestPath = keys
+
+	# for i in xrange(len(keys)-1):
+	# 	for j in xrange(i+1, len(keys)+1):
+	# 		testPath = TwooptSwap(keys, i, j)
+	# 		# print len(testPath)
+
+	# 		this_dist= FindPathDistance(testPath)
+	# 		# print this_dist
+	# 		if this_dist < best_distance:
+	# 			best_distance = this_dist
+	# 			bestPath = testPath
+	# print best_distance, bestPath
+
+
+	# last_city = starting_city
+	# Final_distances=[]
+	# Final_Path=[]
+	# Final_lats=[]
+	# Final_longs=[]
+	# distances = []
+
+	# Final_Path.append(last_city)
+	# Final_lats.append(CityDict[last_city][0])
+	# Final_longs.append(CityDict[last_city][1])
+
+	# AllPermutations = list(itertools.permutations(keys, len(keys)))
+
+	# for i in AllPermutations:
+	# 	path_dist = 0
+	# 	for j in i:
+	# 		path_dist += FindDistanceSquared(CityDict[last_city], CityDict[j])
+	# 		last_city = j
+	# 	distances.append(path_dist)
+	# 	# print path_dist
+	# # print min(distances), AllPermutations[distances.index(min(distances))]
+
+	# Final_Path = AllPermutations[distances.index(min(distances))]
+	# # print Final_Path
+
+	# # for k in Final_Path:
+	# # 	Final_lats.append(CityDict[k][0])
+	# # 	Final_longs.append(CityDict[k][1])
+	# dist, Final_lats, Final_longs = FindPathDistance(Final_Path)
+
+	# print Final_Path
+	# print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
+	# plt.figure()
+	# plt.plot(Final_lats, Final_longs, '-0')
+	# plt.show()
+
+	# Final_Path.append([starting_city, CoordinateDictionary[starting_city]])
+
+	# for k in xrange(len(keys)):
+	# 	AllPossibleCombinations = list(itertools.permutations(keys, 1))
+	# 	# print AllPossibleCombinations
+
+	# 	distances = []
+	# 	for i in AllPossibleCombinations:
+	# 		# print i[0]
+	# 		distances.append(FindDistanceSquared(CityDict[last_city], CityDict[i[0]]))
+
+	# 	#### Look at path, if it intersects with any previous paths, draw a new one.
+
+	# 	next_city = AllPossibleCombinations[distances.index(min(distances))][0]
+	# 	# print(DoTheyIntersect(CityDict[last_city], CityDict[last_city][1], CityDict[next_city][0], CityDict[next_city][1]))
+
+	# 	last_city = next_city
+
+	# 	Final_Path.append([last_city, CityDict[last_city]])
+	# 	Final_lats.append(CityDict[last_city][0])
+	# 	Final_longs.append(CityDict[last_city][1])
+	# 	Final_distances.append(min(distances))
+	# 	keys.remove(last_city)
+	# 	# print last_city
+	# print Final_Path
+	# print "Total Distance: %s" %(math.sqrt(sum(Final_distances)))
+	# plt.figure()
+	# plt.plot(Final_lats, Final_longs, '-0')
+	# plt.show()
+
 if __name__ == "__main__":
 	start_time = time.time()
 	data = GrabData()
-	PartA(data)
+	# PartA(data)
+	PartB(data)
 	print "Runtime: %s seconds" %(time.time() - start_time) 
