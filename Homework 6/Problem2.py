@@ -90,6 +90,7 @@ def PartB():
 	# Using data from http://econym.org.uk/gmap/states.xml for all of the state borders
 	State_Boundaries={}		# A dictionary of lists of tuples that contain coordinates that outline each states borders
 	State_Sorted_Stores={} 	# A dictionary of lists of tuples that contain coordinates of all the stores in that state
+	All_State_Boundaries=[] # A list with all of the points describing state boundaries
 
 	# Prove that the coordinates look right by plotting all state borders
 	for state in all_state_csvs:
@@ -99,17 +100,19 @@ def PartB():
 
 		this_state_data = GrabData(state)
 		State_Boundaries[this_state] = this_state_data
+		for i in this_state_data:
+			All_State_Boundaries.append(i)
 
 		#Create Empty lists for each state to fill later
 		State_Sorted_Stores[this_state] = []
 
 	# Check if the point is in any state
-	Continental_Stores = [] #	A little unneseccary. But a list of tuples (truples?) with the coordinates for the store and the state it's in. Not sorted
+	Continental_Stores = [] #	A little unneseccary. But a list of tuples with the coordinates for the store. Not sorted
 	for store in full_data:
 		for checking_state in State_Boundaries.keys():
 			where_is_store = point_in_poly(store[0], store[1], State_Boundaries[checking_state])
 			if where_is_store.lower() == "in":
-				Continental_Stores.append((store[0], store[1], checking_state))
+				Continental_Stores.append((store[0], store[1]))
 				State_Sorted_Stores[checking_state].append(store) # Only continental states
 			elif where_is_store.lower() == "out":
 				continue
@@ -118,6 +121,13 @@ def PartB():
 
 	print "Number of Stores in Continental US: %s" %(len(Continental_Stores))
 	# print Continental_Stores
+
+	# # Plot state boundaries to see
+	# lats, longs = SeparateLatandLong(All_State_Boundaries)
+	# plt.figure()
+	# plt.scatter(longs,lats)
+	# plt.show()
+	# # Dakotas look a little odd, but overall it looks okay.
 
 	return State_Sorted_Stores
 
@@ -147,5 +157,5 @@ def PartC():
 
 if __name__ == "__main__":
 	# PartA()
-	# PartB()
-	PartC()
+	PartB()
+	# PartC()
