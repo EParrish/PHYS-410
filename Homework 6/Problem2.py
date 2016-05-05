@@ -122,12 +122,12 @@ def PartB():
 	print "Number of Stores in Continental US: %s" %(len(Continental_Stores))
 	# print Continental_Stores
 
-	# # Plot state boundaries to see
-	# lats, longs = SeparateLatandLong(All_State_Boundaries)
-	# plt.figure()
-	# plt.scatter(longs,lats)
-	# plt.show()
-	# # Dakotas look a little odd, but overall it looks okay.
+	# Plot state boundaries to see
+	lats, longs = SeparateLatandLong(All_State_Boundaries)
+	plt.figure()
+	plt.scatter(longs,lats)
+	plt.show()
+	# Dakotas look a little odd, but overall it looks okay.
 
 	return State_Sorted_Stores
 
